@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sd;
+option go_package = "example.com/sd/proto;proto";
+
+message Reserva {
+  string name = 1;
+  string phone = 2;
+  int32 party_size = 3;
+  string preferences = 4;
+}
+message LoteReservas { repeated Reserva reservas = 1; }
+
+message Ack { string message = 1; }
+
+message ResultadoReserva {
+  string name = 1;
+  int32 party_size = 2;
+  string requested_pref = 3;
+  string status = 4;     // "exitoso" | "fallido"
+  string mesa_id = 5;    // si exitoso
+  string motivo = 6;     // si fallido
+  string mesa_tipo = 7;  // tipo final asignado
+}
+
+message SubscribeRequest { string client_id = 1; }
+
+service ReservasService { rpc EnviarLote (LoteReservas) returns (Ack); }
+service RegistroService { rpc Persistir (ResultadoReserva) returns (Ack); }
+service MonitoreoService { rpc Subscribe (SubscribeRequest) returns (stream ResultadoReserva); }
